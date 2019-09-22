@@ -5,6 +5,7 @@ public class Move {
   private Orientation orientation;
   private int rackLength;
 
+  //TODO: Does rackLength have to be in move? Maybe a scoredMove object?
   public Move(Tile[] letterTiles, int row, int column, Orientation orientation, int rackLength) {
     this.letterTiles = letterTiles;
     this.row = row;
