@@ -1,3 +1,5 @@
+import com.sun.org.apache.xpath.internal.operations.Or;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,5 +107,57 @@ public class Board {
     board[row][column] = tile;
   }
 
+  public int dist(int row, int col, Orientation ori) {
+    if (!isClear(row, col)) {
+      return 0;
+    }
+    if (ori == Orientation.VERTICAL) {
+      for (int i = 0; i < 11 - row; i++) {
+        if (isTouching(row + i, col)) {
+          return i + 1;
+        }
+      }
+    } else {
+      for (int i = 0; i < 11 - col; i++) {
+        if (isTouching(row, col + i)) {
+          return i + 1;
+        }
+      }
+    }
+    return -1;
+  }
+
+  private boolean isTouching(int row, int col) {
+    try {
+      if (!isClear(row - 1, col)) {
+        return true;
+      }
+    } catch (IndexOutOfBoundsException e) {
+      //Intentionally blank.
+    }
+    try {
+      if (!isClear(row + 1, col)) {
+        return true;
+      }
+    } catch (IndexOutOfBoundsException e) {
+      //Intentionally blank.
+    }
+    try {
+      if (!isClear(row, col - 1)) {
+        return true;
+      }
+    } catch (IndexOutOfBoundsException e) {
+      //Intentionally blank.
+    }
+    try {
+      if (!isClear(row, col + 1)) {
+        return true;
+      }
+    } catch (IndexOutOfBoundsException e) {
+      //Intentionally blank.
+    }
+    return false;
+
+  }
 
 }

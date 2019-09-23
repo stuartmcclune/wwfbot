@@ -10,8 +10,7 @@ public class Main {
   private static boolean quit = false;
   private static Board board;
 
-  public static void main(String[] args) throws IOException {
-    //Board board = new Board();
+  public static void main(String[] args) {
     board = new Board();
     System.out.println("New Game Started:");
     System.out.println(board);
@@ -34,7 +33,7 @@ public class Main {
           //TODO
           break;
         case "cheat":
-          //TODO
+          cheat(con);
           break;
         case "help":
           con.printf("Valid commands: quit, play, undo, cheat, help.\n");
@@ -44,10 +43,72 @@ public class Main {
 
 
       }
-
-
-
     }
+  }
+
+  private static void cheat(Console con) {
+    // Read rack from console.
+    //TODO: validity check. As below.
+    String rackString = con.readLine("Type letters in rack (if blank, type \'?\'):\n");
+    // Convert String to array of Tiles, setting letter to Character.MIN_VALUE if blank.
+    int rackSize = rackString.length();
+    Tile[] rackTiles = new Tile[rackSize];
+    for (int i = 0; i < rackSize; i++) {
+      if (rackString.charAt(i) == '?') {
+        rackTiles[i] = new Tile(Character.MIN_VALUE, true);
+      } else {
+        rackTiles[i] = new Tile(rackString.charAt(i), false);
+      }
+    }
+
+    List<Move> moves = new ArrayList<>();
+    for (int i = 0; i < 11; i++) {
+      for (int j = 0; j < 11; j++) {
+        int hDist = board.dist(i, j, Orientation.HORIZONTAL);
+        int vDist = board.dist(i, j, Orientation.VERTICAL);
+        if (hDist > 0) {
+          for (int k = hDist; k < rackSize + 1; k++) {
+            List<Tile[]> perms = Utils.permutations(rackTiles, k);
+            for (Tile[] t : perms) {
+              moves.add(new Move(t, i, j, Orientation.HORIZONTAL, rackSize));
+            }
+          }
+        }
+        if (vDist > 0) {
+          for (int k = vDist; k < rackSize + 1; k++) {
+            //TODO: avoid repeat computation.
+            List<Tile[]> perms = Utils.permutations(rackTiles, k);
+            for (Tile[] t : perms) {
+              moves.add(new Move(t, i, j, Orientation.VERTICAL, rackSize));
+            }
+          }
+        }
+      }
+    }
+
+    int bestScore = -1;
+    Move bestMove = null;
+    for (Move m : moves) {
+      int score = m.getScore();
+      if (score >= bestScore) {
+        bestScore = score;
+        bestMove = m;
+      }
+    }
+    if (bestScore == -1) {
+      con.printf("No possible move.\n");
+      return;
+    }
+
+    StringBuilder sb = new StringBuilder();
+    for (Tile t : bestMove.getLetterTiles()) {
+      if (t.isBlank()) {
+        sb.append('?');
+      }
+      sb.append(t.getLetter());
+    }
+    con.printf("BEST MOVE\nLetters: %s\nRow: %d\nColumn: %d\nOrientation: %s\nScore: %d\n", sb.toString(), bestMove.getRow(), bestMove.getColumn(), bestMove.getOrientation().toString(), bestScore);
+
   }
 
   private static void play(Console con) {

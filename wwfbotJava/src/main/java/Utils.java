@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,6 +37,11 @@ public class Utils {
       key *= getPrime(c);
     }
     return key;
+  }
+
+  public static <T> List<T[]> permutations(T[] in, int k) {
+    //TODO: Find python itertools.permutations implementation.
+    return new ArrayList<>();
   }
 
 }

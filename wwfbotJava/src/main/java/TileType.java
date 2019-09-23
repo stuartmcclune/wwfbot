@@ -1,3 +1,3 @@
 public enum TileType {
-  LETTER, EMPTY, DW, TW, DL, TL, START
+  LETTER, EMPTY, DW, TW, DL, TL, START,
 }

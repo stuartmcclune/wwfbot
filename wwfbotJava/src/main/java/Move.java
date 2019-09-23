@@ -34,4 +34,8 @@ public class Move {
     return rackLength;
   }
 
+  public int getScore() {
+    //TODO.
+    return -1;
+  }
 }

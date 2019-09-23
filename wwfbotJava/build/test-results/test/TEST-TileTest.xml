@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="TileTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2019-09-23T00:05:58" hostname="Stuart-PC" time="0.002">
+<testsuite name="TileTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2019-09-23T02:42:38" hostname="Stuart-PC" time="0.007">
   <properties/>
-  <testcase name="correctDLString" classname="TileTest" time="0.0"/>
+  <testcase name="correctDLString" classname="TileTest" time="0.001"/>
   <testcase name="notBlanksAreNotBlank1" classname="TileTest" time="0.0"/>
   <testcase name="notBlanksAreNotBlank2" classname="TileTest" time="0.0"/>
   <testcase name="correctDWString" classname="TileTest" time="0.0"/>
   <testcase name="correctEmptyString" classname="TileTest" time="0.0"/>
-  <testcase name="correctLetterString" classname="TileTest" time="0.0"/>
+  <testcase name="correctLetterString" classname="TileTest" time="0.001"/>
   <testcase name="correctTLString" classname="TileTest" time="0.0"/>
-  <testcase name="correctBlankString" classname="TileTest" time="0.0"/>
-  <testcase name="blanksAreBlank" classname="TileTest" time="0.001"/>
+  <testcase name="correctBlankString" classname="TileTest" time="0.001"/>
+  <testcase name="blanksAreBlank" classname="TileTest" time="0.0"/>
   <testcase name="correctTWString" classname="TileTest" time="0.0"/>
   <testcase name="lettersAreLowercase1" classname="TileTest" time="0.0"/>
   <testcase name="lettersAreLowercase2" classname="TileTest" time="0.0"/>
