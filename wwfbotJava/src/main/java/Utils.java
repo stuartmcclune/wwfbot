@@ -39,9 +39,4 @@ public class Utils {
     return key;
   }
 
-  public static <T> List<T[]> permutations(T[] in, int k) {
-    //TODO: Find python itertools.permutations implementation.
-    return new ArrayList<>();
-  }
-
 }

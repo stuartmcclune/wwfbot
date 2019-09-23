@@ -25,6 +25,13 @@ public class Tile {
     this.tileType = tileType;
   }
 
+  public Tile(Tile other) {
+    tileType = other.tileType;
+    isBlank = other.isBlank;
+    letter = other.letter;
+    score = other.score;
+  }
+
   public boolean isBlank() {
     return isBlank;
   }

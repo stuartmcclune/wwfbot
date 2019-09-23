@@ -1,5 +1,3 @@
-import com.sun.org.apache.xpath.internal.operations.Or;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +39,16 @@ public class Board {
       },
   };
 
+  public Board(Board other) {
+    for (int i = 0; i < 11; i++) {
+      for (int j = 0; j < 1; j++) {
+        board[i][j] = new Tile(other.board[i][j]);
+      }
+    }
+  }
+
+  public Board() {}
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -56,7 +64,11 @@ public class Board {
     return sb.toString();
   }
 
-  private boolean isClear(int row, int column) {
+  public Tile getTile(int row, int col) {
+    return board[row][col];
+  }
+
+  public boolean isClear(int row, int column) {
     Tile tile = board[row][column];
     return tile.getTileType() != TileType.LETTER;
   }
@@ -158,6 +170,10 @@ public class Board {
     }
     return false;
 
+  }
+
+  public int scoreMove(Move m) {
+    return -1;
   }
 
 }

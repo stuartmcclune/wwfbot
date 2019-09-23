@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Move {
   private Tile[] letterTiles;
   private int row;
@@ -8,6 +11,15 @@ public class Move {
   //TODO: Does rackLength have to be in move? Maybe a scoredMove object?
   public Move(Tile[] letterTiles, int row, int column, Orientation orientation, int rackLength) {
     this.letterTiles = letterTiles;
+    this.row = row;
+    this.column = column;
+    this.orientation = orientation;
+    this.rackLength = rackLength;
+  }
+
+  public Move(List<Tile> letterTiles, int row, int column, Orientation orientation, int rackLength) {
+    this.letterTiles = new Tile[letterTiles.size()];
+    letterTiles.toArray(this.letterTiles);
     this.row = row;
     this.column = column;
     this.orientation = orientation;
@@ -34,8 +46,5 @@ public class Move {
     return rackLength;
   }
 
-  public int getScore() {
-    //TODO.
-    return -1;
-  }
+
 }

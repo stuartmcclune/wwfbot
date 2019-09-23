@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import org.paukov.combinatorics3.Generator;
 
 public class Main {
 
@@ -11,45 +12,47 @@ public class Main {
   private static Board board;
 
   public static void main(String[] args) {
+    Scanner sc = new Scanner(System.in);
     board = new Board();
     System.out.println("New Game Started:");
     System.out.println(board);
-    Console con = System.console();
-    if (con == null) {
-      System.out.println("No console available");
-      return;
-    }
-
     while (!quit) {
-      String command = con.readLine("Please enter a command:\n");
+      System.out.println("Please enter a command:");
+      String command = sc.nextLine();
+      //String command = con.readLine("Please enter a command:\n");
       switch (command) {
         case "quit":
           quit = true;
           break;
         case "play":
-          play(con);
+          play();
           break;
         case "undo":
           //TODO
           break;
         case "cheat":
-          cheat(con);
+          cheat();
           break;
         case "help":
-          con.printf("Valid commands: quit, play, undo, cheat, help.\n");
+          System.out.println("Valid commands: quit, play, undo, cheat, help.");
+          //con.printf("Valid commands: quit, play, undo, cheat, help.\n");
           break;
         default:
-          con.printf("Invalid command. Type \"help\" for all options.\n");
+          System.out.println("Invalid command. Type \"help\" for all options.");
+          //con.printf("Invalid command. Type \"help\" for all options.\n");
 
 
       }
     }
   }
 
-  private static void cheat(Console con) {
+  private static void cheat() {
     // Read rack from console.
     //TODO: validity check. As below.
-    String rackString = con.readLine("Type letters in rack (if blank, type \'?\'):\n");
+    Scanner sc = new Scanner(System.in);
+    System.out.println("Type letters in rack (if blank, type \'?\'):");
+    String rackString = sc.nextLine();
+    //String rackString = con.readLine("Type letters in rack (if blank, type \'?\'):\n");
     // Convert String to array of Tiles, setting letter to Character.MIN_VALUE if blank.
     int rackSize = rackString.length();
     Tile[] rackTiles = new Tile[rackSize];
@@ -68,35 +71,46 @@ public class Main {
         int vDist = board.dist(i, j, Orientation.VERTICAL);
         if (hDist > 0) {
           for (int k = hDist; k < rackSize + 1; k++) {
-            List<Tile[]> perms = Utils.permutations(rackTiles, k);
-            for (Tile[] t : perms) {
-              moves.add(new Move(t, i, j, Orientation.HORIZONTAL, rackSize));
-            }
+            int finalI = i;
+            int finalJ = j;
+            Generator.combination(rackTiles)
+                .simple(k)
+                .stream()
+                .forEach(combination -> Generator.permutation(combination)
+                .simple()
+                .forEach(p -> moves.add(new Move(p, finalI, finalJ, Orientation.HORIZONTAL, rackSize))));
           }
         }
         if (vDist > 0) {
           for (int k = vDist; k < rackSize + 1; k++) {
             //TODO: avoid repeat computation.
-            List<Tile[]> perms = Utils.permutations(rackTiles, k);
-            for (Tile[] t : perms) {
-              moves.add(new Move(t, i, j, Orientation.VERTICAL, rackSize));
-            }
+            int finalI = i;
+            int finalJ = j;
+            Generator.combination(rackTiles)
+                .simple(k)
+                .stream()
+                .forEach(combination -> Generator.permutation(combination)
+                    .simple()
+                    .forEach(p -> moves.add(new Move(p, finalI, finalJ, Orientation.VERTICAL, rackSize))));
           }
         }
       }
     }
+    System.out.println("Considering " + moves.size() + " possible moves.");
 
     int bestScore = -1;
     Move bestMove = null;
     for (Move m : moves) {
-      int score = m.getScore();
+      Board boardCpy = new Board(board);
+      int score = boardCpy.scoreMove(m);
       if (score >= bestScore) {
         bestScore = score;
         bestMove = m;
       }
     }
     if (bestScore == -1) {
-      con.printf("No possible move.\n");
+      System.out.println("No possible move.");
+      //con.printf("No possible move.\n");
       return;
     }
 
@@ -107,14 +121,23 @@ public class Main {
       }
       sb.append(t.getLetter());
     }
-    con.printf("BEST MOVE\nLetters: %s\nRow: %d\nColumn: %d\nOrientation: %s\nScore: %d\n", sb.toString(), bestMove.getRow(), bestMove.getColumn(), bestMove.getOrientation().toString(), bestScore);
+    System.out.println("BEST MOVE");
+    System.out.println("Letters: " + sb);
+    System.out.println("Row: " + bestMove.getRow());
+    System.out.println("Column: " + bestMove.getColumn());
+    System.out.println("Orientation: " + bestMove.getOrientation());
+    System.out.println("Score: " + bestScore);
+    //con.printf("BEST MOVE\nLetters: %s\nRow: %d\nColumn: %d\nOrientation: %s\nScore: %d\n", sb.toString(), bestMove.getRow(), bestMove.getColumn(), bestMove.getOrientation().toString(), bestScore);
 
   }
 
-  private static void play(Console con) {
+  private static void play() {
     // Read letters from console.
     //TODO: validity check on string - either check contents or catch exception when tile constructed.
-    String letters = con.readLine("Type letters played (if blank, prepend with \'?\'):\n");
+    Scanner sc = new Scanner(System.in);
+    System.out.println("Type letters played (if blank, prepend with \'?\'):");
+    String letters = sc.nextLine();
+    //String letters = con.readLine("Type letters played (if blank, prepend with \'?\'):\n");
     // Convert String to array of Tiles.
     List<Tile> letterTilesList = new ArrayList<>();
     boolean isBlank = false;
@@ -136,8 +159,9 @@ public class Main {
     int row = -1;
     boolean validRow = false;
     while (!validRow) {
-      Scanner sc = new Scanner(con.reader());
-      con.printf("Type row of first letter (starting from 0 at top):\n");
+      sc = new Scanner(System.in);
+      //con.printf("Type row of first letter (starting from 0 at top):\n");
+      System.out.println("Type row of first letter (starting from 0 at top):");
       try {
         row = sc.nextInt();
         validRow = row <= 10 && row >= 0;
@@ -145,7 +169,8 @@ public class Main {
         validRow = false;
       }
       if (!validRow) {
-        con.printf("Invalid row: Must be an integer between 0 and 10 inclusive.\n");
+        System.out.println("Invalid row: Must be an integer between 0 and 10 inclusive.");
+        //con.printf("Invalid row: Must be an integer between 0 and 10 inclusive.\n");
       }
     }
 
@@ -153,8 +178,9 @@ public class Main {
     int col = -1;
     boolean validCol = false;
     while (!validCol) {
-      Scanner sc = new Scanner(con.reader());
-      con.printf("Type column of first letter (starting from 0 on left):\n");
+      sc = new Scanner(System.in);
+      //con.printf("Type column of first letter (starting from 0 on left):\n");
+      System.out.println("Type column of first letter (starting from 0 on left):");
       try {
         col = sc.nextInt();
         validCol = col <= 10 && col >= 0;
@@ -162,7 +188,8 @@ public class Main {
         validCol = false;
       }
       if (!validCol) {
-        con.printf("Invalid column: Must be an integer between 0 and 10 inclusive.\n");
+        //con.printf("Invalid column: Must be an integer between 0 and 10 inclusive.\n");
+        System.out.println("Invalid column: Must be an integer between 0 and 10 inclusive.");
       }
     }
 
@@ -170,7 +197,10 @@ public class Main {
     boolean validOri = false;
     Orientation ori = null;
     while (!validOri) {
-      String oriString = con.readLine("Type orientation of letters to play (h for horizontal, v for vertical):\n");
+      System.out.println("Type orientation of letters to play (h for horizontal, v for vertical):");
+      //String oriString = con.readLine("Type orientation of letters to play (h for horizontal, v for vertical):\n");
+      sc = new Scanner(System.in);
+      String oriString = sc.nextLine();
       switch (oriString) {
         case "h":
           ori = Orientation.HORIZONTAL;
@@ -181,7 +211,8 @@ public class Main {
           validOri = true;
           break;
         default:
-          con.printf("Invalid orientation: Must be \'h\' or \'v\'.\n");
+          System.out.println("Invalid orientation: Must be \'h\' or \'v\'.");
+          //con.printf("Invalid orientation: Must be \'h\' or \'v\'.\n");
           validOri = false;
       }
     }
@@ -191,8 +222,9 @@ public class Main {
     if (board.playMove(move)) {
       System.out.println(board);
     } else {
-      con.printf("Invalid move: Please make sure your move can be played on the board.\n");
-      play(con);
+      System.out.println("Invalid move: Please make sure your move can be played on the board.");
+      //con.printf("Invalid move: Please make sure your move can be played on the board.\n");
+      play();
     }
 
 
