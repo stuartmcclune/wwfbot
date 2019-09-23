@@ -125,9 +125,15 @@ public class Main {
       }
     }
 
+    // Play move and print board.
     Move move = new Move(letterTiles, row, col, ori, 0);
-    board.playMove(move);
-    System.out.println(board);
+    if (board.playMove(move)) {
+      System.out.println(board);
+    } else {
+      con.printf("Invalid move: Please make sure your move can be played on the board.\n");
+      play(con);
+    }
+
 
   }
 
