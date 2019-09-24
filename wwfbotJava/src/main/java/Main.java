@@ -101,8 +101,7 @@ public class Main {
     int bestScore = -1;
     Move bestMove = null;
     for (Move m : moves) {
-      Board boardCpy = new Board(board);
-      int score = boardCpy.scoreMove(m);
+      int score = m.getScore(board);
       if (score >= bestScore) {
         bestScore = score;
         bestMove = m;

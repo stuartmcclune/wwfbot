@@ -39,16 +39,6 @@ public class Board {
       },
   };
 
-  public Board(Board other) {
-    for (int i = 0; i < 11; i++) {
-      for (int j = 0; j < 1; j++) {
-        board[i][j] = new Tile(other.board[i][j]);
-      }
-    }
-  }
-
-  public Board() {}
-
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -170,10 +160,6 @@ public class Board {
     }
     return false;
 
-  }
-
-  public int scoreMove(Move m) {
-    return -1;
   }
 
 }

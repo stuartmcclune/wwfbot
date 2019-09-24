@@ -21,6 +21,9 @@ public class WordList {
 
   public boolean containsMap(String s) {
     int key = Utils.getAnagramKey(s);
+    if (!anagramMap.containsKey(key)) {
+      return false;
+    }
     return anagramMap.get(key).contains(s.toLowerCase());
   }
 
