@@ -61,6 +61,8 @@ public class Move {
       for (int i = 0; i < n; i++) {
         int letterMultiplier = 1;
         word.addLast(letterTiles[i].getLetter());
+        //TODO: Check for out of bounds.
+        //TODO: Change to allow for crossing existing words.
         switch (board.getTile(row, column + i).getTileType()) {
           case TL:
             letterMultiplier = 3;
