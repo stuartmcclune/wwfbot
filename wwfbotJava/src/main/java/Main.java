@@ -1,6 +1,3 @@
-import java.io.Console;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -19,7 +16,6 @@ public class Main {
     while (!quit) {
       System.out.println("Please enter a command:");
       String command = sc.nextLine();
-      //String command = con.readLine("Please enter a command:\n");
       switch (command) {
         case "quit":
           quit = true;
@@ -35,12 +31,9 @@ public class Main {
           break;
         case "help":
           System.out.println("Valid commands: quit, play, undo, cheat, help.");
-          //con.printf("Valid commands: quit, play, undo, cheat, help.\n");
           break;
         default:
           System.out.println("Invalid command. Type \"help\" for all options.");
-          //con.printf("Invalid command. Type \"help\" for all options.\n");
-
 
       }
     }
@@ -52,7 +45,6 @@ public class Main {
     Scanner sc = new Scanner(System.in);
     System.out.println("Type letters in rack (if blank, type \'?\'):");
     String rackString = sc.nextLine();
-    //String rackString = con.readLine("Type letters in rack (if blank, type \'?\'):\n");
     // Convert String to array of Tiles, setting letter to Character.MIN_VALUE if blank.
     int rackSize = rackString.length();
     Tile[] rackTiles = new Tile[rackSize];
@@ -78,7 +70,7 @@ public class Main {
                 .stream()
                 .forEach(combination -> Generator.permutation(combination)
                 .simple()
-                .forEach(p -> moves.add(new Move(p, finalI, finalJ, Orientation.HORIZONTAL, rackSize))));
+                .forEach(p -> moves.add(new Move(p, finalI, finalJ, Orientation.HORIZONTAL))));
           }
         }
         if (vDist > 0) {
@@ -91,7 +83,7 @@ public class Main {
                 .stream()
                 .forEach(combination -> Generator.permutation(combination)
                     .simple()
-                    .forEach(p -> moves.add(new Move(p, finalI, finalJ, Orientation.VERTICAL, rackSize))));
+                    .forEach(p -> moves.add(new Move(p, finalI, finalJ, Orientation.VERTICAL))));
           }
         }
       }
@@ -109,7 +101,6 @@ public class Main {
     }
     if (bestScore == -1) {
       System.out.println("No possible move.");
-      //con.printf("No possible move.\n");
       return;
     }
 
@@ -126,7 +117,6 @@ public class Main {
     System.out.println("Column: " + bestMove.getColumn());
     System.out.println("Orientation: " + bestMove.getOrientation());
     System.out.println("Score: " + bestScore);
-    //con.printf("BEST MOVE\nLetters: %s\nRow: %d\nColumn: %d\nOrientation: %s\nScore: %d\n", sb.toString(), bestMove.getRow(), bestMove.getColumn(), bestMove.getOrientation().toString(), bestScore);
 
   }
 
@@ -136,7 +126,6 @@ public class Main {
     Scanner sc = new Scanner(System.in);
     System.out.println("Type letters played (if blank, prepend with \'?\'):");
     String letters = sc.nextLine();
-    //String letters = con.readLine("Type letters played (if blank, prepend with \'?\'):\n");
     // Convert String to array of Tiles.
     List<Tile> letterTilesList = new ArrayList<>();
     boolean isBlank = false;
@@ -159,7 +148,6 @@ public class Main {
     boolean validRow = false;
     while (!validRow) {
       sc = new Scanner(System.in);
-      //con.printf("Type row of first letter (starting from 0 at top):\n");
       System.out.println("Type row of first letter (starting from 0 at top):");
       try {
         row = sc.nextInt();
@@ -169,7 +157,6 @@ public class Main {
       }
       if (!validRow) {
         System.out.println("Invalid row: Must be an integer between 0 and 10 inclusive.");
-        //con.printf("Invalid row: Must be an integer between 0 and 10 inclusive.\n");
       }
     }
 
@@ -178,7 +165,6 @@ public class Main {
     boolean validCol = false;
     while (!validCol) {
       sc = new Scanner(System.in);
-      //con.printf("Type column of first letter (starting from 0 on left):\n");
       System.out.println("Type column of first letter (starting from 0 on left):");
       try {
         col = sc.nextInt();
@@ -187,7 +173,6 @@ public class Main {
         validCol = false;
       }
       if (!validCol) {
-        //con.printf("Invalid column: Must be an integer between 0 and 10 inclusive.\n");
         System.out.println("Invalid column: Must be an integer between 0 and 10 inclusive.");
       }
     }
@@ -197,7 +182,6 @@ public class Main {
     Orientation ori = null;
     while (!validOri) {
       System.out.println("Type orientation of letters to play (h for horizontal, v for vertical):");
-      //String oriString = con.readLine("Type orientation of letters to play (h for horizontal, v for vertical):\n");
       sc = new Scanner(System.in);
       String oriString = sc.nextLine();
       switch (oriString) {
@@ -211,18 +195,16 @@ public class Main {
           break;
         default:
           System.out.println("Invalid orientation: Must be \'h\' or \'v\'.");
-          //con.printf("Invalid orientation: Must be \'h\' or \'v\'.\n");
           validOri = false;
       }
     }
 
     // Play move and print board.
-    Move move = new Move(letterTiles, row, col, ori, 0);
+    Move move = new Move(letterTiles, row, col, ori);
     if (board.playMove(move)) {
       System.out.println(board);
     } else {
       System.out.println("Invalid move: Please make sure your move can be played on the board.");
-      //con.printf("Invalid move: Please make sure your move can be played on the board.\n");
       play();
     }
 

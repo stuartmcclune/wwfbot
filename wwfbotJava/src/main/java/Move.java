@@ -1,6 +1,3 @@
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 
 public class Move {
@@ -8,24 +5,20 @@ public class Move {
   private int row;
   private int column;
   private Orientation orientation;
-  private int rackLength;
 
-  //TODO: Does rackLength have to be in move? Maybe a scoredMove object?
-  public Move(Tile[] letterTiles, int row, int column, Orientation orientation, int rackLength) {
+  public Move(Tile[] letterTiles, int row, int column, Orientation orientation) {
     this.letterTiles = letterTiles;
     this.row = row;
     this.column = column;
     this.orientation = orientation;
-    this.rackLength = rackLength;
   }
 
-  public Move(List<Tile> letterTiles, int row, int column, Orientation orientation, int rackLength) {
+  public Move(List<Tile> letterTiles, int row, int column, Orientation orientation) {
     this.letterTiles = new Tile[letterTiles.size()];
     letterTiles.toArray(this.letterTiles);
     this.row = row;
     this.column = column;
     this.orientation = orientation;
-    this.rackLength = rackLength;
   }
 
   public Tile[] getLetterTiles() {
@@ -44,251 +37,134 @@ public class Move {
     return orientation;
   }
 
-  public int getRackLength() {
-    return rackLength;
+  public int findAndScoreWord(Board board, int row, int column, Orientation orientation, int numberNewTiles, int lettersOffset) {
+    int wordScore = 0;
+    int wordMultiplier = 1;
+    StringBuilder word = new StringBuilder();
+
+    //Find start of word.
+    int c = column - 1;
+    int r = row - 1;
+    if (orientation == Orientation.HORIZONTAL) {
+      //Horizontal.
+      //Decrement c until -1 or clear tile found.
+      while (c >= 0 && !board.isClear(row, c)) {
+        c--;
+      }
+    } else {
+      //Vertical.
+      //Decrement r until -1 or clear tile found.
+      while (r >= 0 && !board.isClear(r, column)) {
+        r--;
+      }
+    }
+    //Increment c and r to index of first letter of word.
+    c++;
+    r++;
+
+    //Iterate through whole word.
+    int lettersIndex = 0;
+    while (c < 11 && r < 11 && (lettersIndex < numberNewTiles || !board.isClear(r, c))) {
+      Tile tile = board.getTile(r, c);
+      switch (tile.getTileType()) {
+        case LETTER:
+          word.append(tile.getLetter());
+          wordScore += tile.getScore();
+          break;
+        case TW:
+          word.append(letterTiles[lettersIndex + lettersOffset].getLetter());
+          wordScore += letterTiles[lettersIndex + lettersOffset].getScore();
+          lettersIndex++;
+          wordMultiplier *= 3;
+          break;
+        case DW:
+          word.append(letterTiles[lettersIndex + lettersOffset].getLetter());
+          wordScore += letterTiles[lettersIndex + lettersOffset].getScore();
+          lettersIndex++;
+          wordMultiplier *= 2;
+          break;
+        case DL:
+          word.append(letterTiles[lettersIndex + lettersOffset].getLetter());
+          wordScore += letterTiles[lettersIndex + lettersOffset].getScore() * 2;
+          lettersIndex++;
+          break;
+        case TL:
+          word.append(letterTiles[lettersIndex + lettersOffset].getLetter());
+          wordScore += letterTiles[lettersIndex + lettersOffset].getScore() * 3;
+          lettersIndex++;
+          break;
+        default:
+          word.append(letterTiles[lettersIndex + lettersOffset].getLetter());
+          wordScore += letterTiles[lettersIndex + lettersOffset].getScore();
+          lettersIndex++;
+          break;
+      }
+      if (orientation == Orientation.HORIZONTAL) {
+        c++;
+      } else {
+        r++;
+      }
+    }
+
+    //Invalid move - can't fit all letters on board.
+    if (lettersIndex < numberNewTiles) {
+      return -1;
+    }
+    //One letter words don't count.
+    if (word.length() == 1) {
+      return 0;
+    }
+    //Check if word is valid.
+    if (WordList.getInstance().containsMap(word.toString())) {
+      //Calculate score.
+      return wordScore * wordMultiplier;
+    } else {
+      //Invalid word.
+      return -1;
+    }
   }
 
 
   public int getScore(Board board) {
-    Deque<Character> word = new ArrayDeque<>();
     int n = letterTiles.length;
-    int wordScore = 0;
-    int wordMultiplier = 1;
+    int wordScore;
     int score = n == 7 ? 35 : 0;
     if (orientation == Orientation.HORIZONTAL) {
-      //Constructing one horizontal word.
-      //New letters.
-      for (int i = 0; i < n; i++) {
-        int letterMultiplier = 1;
-        word.addLast(letterTiles[i].getLetter());
-        //TODO: Check for out of bounds.
-        //TODO: Change to allow for crossing existing words.
-        switch (board.getTile(row, column + i).getTileType()) {
-          case TL:
-            letterMultiplier = 3;
-            break;
-          case DL:
-            letterMultiplier = 2;
-            break;
-          case DW:
-            wordMultiplier *= 2;
-            break;
-          case TW:
-            wordMultiplier *= 3;
-            break;
-          default:
-            break;
-        }
-        wordScore += letterTiles[i].getScore() * letterMultiplier;
-      }
-      //Existing letters after.
-      int c = column + n;
-      while(c < 11 && !board.isClear(row, c)) {
-        Tile tile = board.getTile(row, c);
-        word.addLast(tile.getLetter());
-        wordScore += tile.getScore();
-        c++;
-      }
-      //Existing letters before.
-      c = column - 1;
-      while(c >= 0 && !board.isClear(row, c)) {
-        Tile tile = board.getTile(row, c);
-        word.addFirst(tile.getLetter());
-        wordScore += tile.getScore();
-        c--;
-      }
-      //Calculate score.
-      wordScore *= wordMultiplier;
-      score += wordScore;
-      //Convert Deque<Character> to String.
-      Character[] wordCharacterArray = new Character[word.size()];
-      word.toArray(wordCharacterArray);
-      char[] wordCharArray = new char[word.size()];
-      for (int i = 0; i < word.size(); i++) {
-        wordCharArray[i] = wordCharacterArray[i];
-      }
-      String wordStr = new String(wordCharArray);
-      //Check if word is valid.
-      if (wordStr.length() > 1 && !WordList.getInstance().containsMap(wordStr)) {
+      //One horizontal word formed.
+      wordScore = findAndScoreWord(board, row, column, Orientation.HORIZONTAL, n, 0);
+      if (wordScore == -1) {
         return -1;
       }
+      score += wordScore;
 
-      //Construct up to n vertical words.
+      //Up to n vertical words formed.
       for (int i = 0; i < n; i++) {
-        //New letter.
-        word = new ArrayDeque<>();
-        wordScore = 0;
-        wordMultiplier = 1;
-        int letterMultiplier = 1;
-        word.addLast(letterTiles[i].getLetter());
-        switch (board.getTile(row, column + i).getTileType()) {
-          case TL:
-            letterMultiplier = 3;
-            break;
-          case DL:
-            letterMultiplier = 2;
-            break;
-          case DW:
-            wordMultiplier *= 2;
-            break;
-          case TW:
-            wordMultiplier *= 3;
-            break;
-          default:
-            break;
-        }
-        wordScore += letterTiles[i].getScore() * letterMultiplier;
-
-        //Existing letters below.
-        int r = row + 1;
-        while(r < 11 && !board.isClear(r, column + i)) {
-          Tile tile = board.getTile(r, column + i);
-          word.addLast(tile.getLetter());
-          wordScore += tile.getScore();
-          r++;
-        }
-        //Existing letters above.
-        r = row - 1;
-        while(r >= 0 && !board.isClear(r, column + i)) {
-          Tile tile = board.getTile(r, column + i);
-          word.addFirst(tile.getLetter());
-          wordScore += tile.getScore();
-          r--;
-        }
-
-        //Calculate score.
-        wordScore *= wordMultiplier;
-        score += wordScore;
-        //Convert Deque<Character> to String.
-        wordCharacterArray = new Character[word.size()];
-        word.toArray(wordCharacterArray);
-        wordCharArray = new char[word.size()];
-        for (int j = 0; j < word.size(); j++) {
-          wordCharArray[j] = wordCharacterArray[j];
-        }
-        wordStr = new String(wordCharArray);
-        //Check if word is valid.
-        if (wordStr.length() > 1 && !WordList.getInstance().containsMap(wordStr)) {
+        wordScore = findAndScoreWord(board, row, column + i, Orientation.VERTICAL, 1, i);
+        if (wordScore == -1) {
           return -1;
         }
+        score += wordScore;
       }
+
     } else {
-      //Vertical move.
-      //Constructing one vertical word.
-      //New letters.
-      for (int i = 0; i < n; i++) {
-        int letterMultiplier = 1;
-        word.addLast(letterTiles[i].getLetter());
-        switch (board.getTile(row + i, column).getTileType()) {
-          case TL:
-            letterMultiplier = 3;
-            break;
-          case DL:
-            letterMultiplier = 2;
-            break;
-          case DW:
-            wordMultiplier *= 2;
-            break;
-          case TW:
-            wordMultiplier *= 3;
-            break;
-          default:
-            break;
-        }
-        wordScore += letterTiles[i].getScore() * letterMultiplier;
-      }
-      //Existing letters after.
-      int r = row + n;
-      while(r < 11 && !board.isClear(r, column)) {
-        Tile tile = board.getTile(r, column);
-        word.addLast(tile.getLetter());
-        wordScore += tile.getScore();
-        r++;
-      }
-      //Existing letters before.
-      r = row - 1;
-      while(r >= 0 && !board.isClear(r, column)) {
-        Tile tile = board.getTile(r, column);
-        word.addFirst(tile.getLetter());
-        wordScore += tile.getScore();
-        r--;
-      }
-      //Calculate score.
-      wordScore *= wordMultiplier;
-      score += wordScore;
-      //Convert Deque<Character> to String.
-      Character[] wordCharacterArray = new Character[word.size()];
-      word.toArray(wordCharacterArray);
-      char[] wordCharArray = new char[word.size()];
-      for (int i = 0; i < word.size(); i++) {
-        wordCharArray[i] = wordCharacterArray[i];
-      }
-      String wordStr = new String(wordCharArray);
-      //Check if word is valid.
-      if (wordStr.length() > 1 && !WordList.getInstance().containsMap(wordStr)) {
+      //One vertical word formed.
+      wordScore = findAndScoreWord(board, row, column, Orientation.VERTICAL, n, 0);
+      if (wordScore == -1) {
         return -1;
       }
+      score += wordScore;
 
-      //Construct up to n horizontal words.
+      //Up to n horizontal words formed.
       for (int i = 0; i < n; i++) {
-        //New letter.
-        word = new ArrayDeque<>();
-        wordScore = 0;
-        wordMultiplier = 1;
-        int letterMultiplier = 1;
-        word.addLast(letterTiles[i].getLetter());
-        switch (board.getTile(row + i, column).getTileType()) {
-          case TL:
-            letterMultiplier = 3;
-            break;
-          case DL:
-            letterMultiplier = 2;
-            break;
-          case DW:
-            wordMultiplier *= 2;
-            break;
-          case TW:
-            wordMultiplier *= 3;
-            break;
-          default:
-            break;
-        }
-        wordScore += letterTiles[i].getScore() * letterMultiplier;
-
-        //Existing letters after.
-        int c = column + 1;
-        while(c < 11 && !board.isClear(row + i, c)) {
-          Tile tile = board.getTile(row + i, c);
-          word.addLast(tile.getLetter());
-          wordScore += tile.getScore();
-          c++;
-        }
-        //Existing letters before.
-        c = column - 1;
-        while(c >= 0 && !board.isClear(row + i, c)) {
-          Tile tile = board.getTile(row + i, c);
-          word.addFirst(tile.getLetter());
-          wordScore += tile.getScore();
-          c--;
-        }
-
-        //Calculate score.
-        wordScore *= wordMultiplier;
-        score += wordScore;
-        //Convert Deque<Character> to String.
-        wordCharacterArray = new Character[word.size()];
-        word.toArray(wordCharacterArray);
-        wordCharArray = new char[word.size()];
-        for (int j = 0; j < word.size(); j++) {
-          wordCharArray[j] = wordCharacterArray[j];
-        }
-        wordStr = new String(wordCharArray);
-        //Check if word is valid.
-        if (wordStr.length() > 1 && !WordList.getInstance().containsMap(wordStr)) {
+        wordScore = findAndScoreWord(board, row + i, column, Orientation.HORIZONTAL, 1, i);
+        if (wordScore == -1) {
           return -1;
         }
+        score += wordScore;
       }
+
     }
     return score;
   }
+
 }
