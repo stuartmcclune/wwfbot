@@ -29,8 +29,11 @@ public class Main {
         case "cheat":
           cheat();
           break;
+        case "show":
+          System.out.println(board);
+          break;
         case "help":
-          System.out.println("Valid commands: quit, play, undo, cheat, help.");
+          System.out.println("Valid commands: quit, play, undo, cheat, show, help.");
           break;
         default:
           System.out.println("Invalid command. Type \"help\" for all options.");
