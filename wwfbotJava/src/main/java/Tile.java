@@ -50,7 +50,7 @@ public class Tile {
       case DL: return "DL ";
       case TL: return "TL ";
       case START: return " + ";
-      case LETTER: return letter + " " + (isBlank ? "0" : score);
+      case LETTER: return letter + (score == 10 ? "" : " ") + (isBlank ? "0" : score);
     }
     return "ERR";
   }
