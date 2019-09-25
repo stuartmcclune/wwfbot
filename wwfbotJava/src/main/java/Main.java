@@ -57,33 +57,47 @@ public class Main {
     }
 
     List<Move> moves = new ArrayList<>();
-    for (int i = 0; i < 11; i++) {
-      for (int j = 0; j < 11; j++) {
-        int hDist = board.dist(i, j, Orientation.HORIZONTAL);
-        int vDist = board.dist(i, j, Orientation.VERTICAL);
-        if (hDist > 0) {
-          for (int k = hDist; k < rackSize + 1; k++) {
-            int finalI = i;
-            int finalJ = j;
-            Generator.combination(rackTiles)
-                .simple(k)
-                .stream()
-                .forEach(combination -> Generator.permutation(combination)
-                .simple()
-                .forEach(p -> moves.add(new Move(p, finalI, finalJ, Orientation.HORIZONTAL))));
+
+    if (board.isStart()) {
+      //First move.
+      for (int i = 1; i < rackSize + 1; i++) {
+        Generator.combination(rackTiles)
+            .simple(i)
+            .stream()
+            .forEach(combination -> Generator.permutation(combination)
+            .simple()
+            .forEach(p -> moves.add(new Move(p, 5, p.size() == 7 ? 4 : 5, Orientation.HORIZONTAL))));
+      }
+    } else {
+      //Not first move.
+      for (int i = 0; i < 11; i++) {
+        for (int j = 0; j < 11; j++) {
+          int hDist = board.dist(i, j, Orientation.HORIZONTAL);
+          int vDist = board.dist(i, j, Orientation.VERTICAL);
+          if (hDist > 0) {
+            for (int k = hDist; k < rackSize + 1; k++) {
+              int finalI = i;
+              int finalJ = j;
+              Generator.combination(rackTiles)
+                  .simple(k)
+                  .stream()
+                  .forEach(combination -> Generator.permutation(combination)
+                      .simple()
+                      .forEach(p -> moves.add(new Move(p, finalI, finalJ, Orientation.HORIZONTAL))));
+            }
           }
-        }
-        if (vDist > 0) {
-          for (int k = vDist; k < rackSize + 1; k++) {
-            //TODO: avoid repeat computation.
-            int finalI = i;
-            int finalJ = j;
-            Generator.combination(rackTiles)
-                .simple(k)
-                .stream()
-                .forEach(combination -> Generator.permutation(combination)
-                    .simple()
-                    .forEach(p -> moves.add(new Move(p, finalI, finalJ, Orientation.VERTICAL))));
+          if (vDist > 0) {
+            for (int k = vDist; k < rackSize + 1; k++) {
+              //TODO: avoid repeat computation.
+              int finalI = i;
+              int finalJ = j;
+              Generator.combination(rackTiles)
+                  .simple(k)
+                  .stream()
+                  .forEach(combination -> Generator.permutation(combination)
+                      .simple()
+                      .forEach(p -> moves.add(new Move(p, finalI, finalJ, Orientation.VERTICAL))));
+            }
           }
         }
       }

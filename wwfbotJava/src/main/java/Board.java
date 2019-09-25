@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Board {
+  private boolean isStart = true;
+
   private Tile[][] board = {
       {
         new Tile(TileType.TL), new Tile(), new Tile(TileType.TW), new Tile(), new Tile(), new Tile(), new Tile(),
@@ -63,6 +65,10 @@ public class Board {
     return tile.getTileType() != TileType.LETTER;
   }
 
+  public boolean isStart() {
+    return isStart;
+  }
+
   public boolean playMove(Move move) {
     List<TileHistory> changes = new ArrayList<>();
     Tile[] letterTiles = move.getLetterTiles();
@@ -96,6 +102,7 @@ public class Board {
             j++;
           }
       }
+      isStart = false;
       return true;
     } catch (IndexOutOfBoundsException e) {
       for (TileHistory change : changes) {
