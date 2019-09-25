@@ -3,7 +3,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
-import javafx.util.Pair;
+import utils.Pair;
 import org.paukov.combinatorics3.Generator;
 
 public class Main {

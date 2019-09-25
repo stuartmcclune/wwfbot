@@ -37,7 +37,7 @@ public class BoardTest {
   @Test
   public void canPlaySimpleHorizontalMove() {
     Board board = new Board();
-    Move move = new Move(new Tile[]{new Tile('h'), new Tile('i')}, 0, 0, Orientation.HORIZONTAL, 7);
+    Move move = new Move(new Tile[]{new Tile('h'), new Tile('i')}, 0, 0, Orientation.HORIZONTAL);
     assertThat(board.playMove(move), is(true));
     assertThat(board.toString(), is(
         ".---.---.---.---.---.---.---.---.---.---.---.\n" +
@@ -69,7 +69,7 @@ public class BoardTest {
   @Test
   public void canPlaySimpleVerticalMove() {
     Board board = new Board();
-    Move move = new Move(new Tile[]{new Tile('h'), new Tile('i')}, 0, 0, Orientation.VERTICAL, 7);
+    Move move = new Move(new Tile[]{new Tile('h'), new Tile('i')}, 0, 0, Orientation.VERTICAL);
     assertThat(board.playMove(move), is(true));
     assertThat(board.toString(), is(
         ".---.---.---.---.---.---.---.---.---.---.---.\n" +
@@ -101,7 +101,7 @@ public class BoardTest {
   @Test
   public void canPlayBlanks() {
     Board board = new Board();
-    Move move = new Move(new Tile[]{new Tile('h', true), new Tile('i')}, 0, 0, Orientation.HORIZONTAL, 7);
+    Move move = new Move(new Tile[]{new Tile('h', true), new Tile('i')}, 0, 0, Orientation.HORIZONTAL);
     assertThat(board.playMove(move), is(true));
     assertThat(board.toString(), is(
         ".---.---.---.---.---.---.---.---.---.---.---.\n" +
@@ -133,7 +133,7 @@ public class BoardTest {
   @Test
   public void moveCannotStartOutOfBounds() {
     Board board = new Board();
-    Move move = new Move(new Tile[]{new Tile('h'), new Tile('i')}, 0, -1, Orientation.HORIZONTAL, 7);
+    Move move = new Move(new Tile[]{new Tile('h'), new Tile('i')}, 0, -1, Orientation.HORIZONTAL);
     assertThat(board.playMove(move), is(false));
     assertThat(board.toString(), is(
         ".---.---.---.---.---.---.---.---.---.---.---.\n" +
@@ -164,7 +164,7 @@ public class BoardTest {
   @Test
   public void moveCannotGoOutOfBounds() {
     Board board = new Board();
-    Move move = new Move(new Tile[]{new Tile('h'), new Tile('i')}, 10, 10, Orientation.HORIZONTAL, 7);
+    Move move = new Move(new Tile[]{new Tile('h'), new Tile('i')}, 10, 10, Orientation.HORIZONTAL);
     assertThat(board.playMove(move), is(false));
     assertThat(board.toString(), is(
         ".---.---.---.---.---.---.---.---.---.---.---.\n" +
@@ -195,9 +195,9 @@ public class BoardTest {
   @Test
   public void canPlayCrossingMoves() {
     Board board = new Board();
-    Move move = new Move(new Tile[]{new Tile('h'), new Tile('e'), new Tile('y')}, 5, 4, Orientation.HORIZONTAL, 7);
+    Move move = new Move(new Tile[]{new Tile('h'), new Tile('e'), new Tile('y')}, 5, 4, Orientation.HORIZONTAL);
     assertThat(board.playMove(move), is(true));
-    move = new Move(new Tile[]{new Tile('h'), new Tile('y')}, 4,5, Orientation.VERTICAL, 7);
+    move = new Move(new Tile[]{new Tile('h'), new Tile('y')}, 4,5, Orientation.VERTICAL);
     assertThat(board.playMove(move), is(true));
     assertThat(board.toString(), is(
         ".---.---.---.---.---.---.---.---.---.---.---.\n" +

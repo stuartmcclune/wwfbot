@@ -1,3 +1,5 @@
+import utils.Utils;
+
 public class Tile {
   private TileType tileType = TileType.LETTER;
   private boolean isBlank = false;
