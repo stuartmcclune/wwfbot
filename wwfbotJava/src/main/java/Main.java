@@ -105,11 +105,55 @@ public class Main {
         }
       }
     }
-    System.out.println("Considering " + moves.size() + " possible moves.");
+
+    //If a move contains a blank, substitute with 26 possible moves.
+    List<Move> allMoves1 = new ArrayList<>();
+    for (Move m : moves) {
+      Tile[] letterTiles = m.getLetterTiles();
+      boolean containsBlank = false;
+      for (int i = 0; i < letterTiles.length; i++) {
+        Tile letterTile = letterTiles[i];
+        if (letterTile.getLetter() == Character.MIN_VALUE) {
+          containsBlank = true;
+          for (int j = 0; j < 26; j++) {
+            Tile[] newLetterTiles = letterTiles.clone();
+            newLetterTiles[i] = new Tile((char) (j + ((int) 'a')), true);
+            allMoves1.add(new Move(newLetterTiles, m.getRow(), m.getColumn(), m.getOrientation()));
+          }
+          break;
+        }
+      }
+      if (!containsBlank) {
+        allMoves1.add(m);
+      }
+    }
+
+    //Repeat for second blank.
+    //TODO: Change to function.
+    List<Move> allMoves = new ArrayList<>();
+    for (Move m : allMoves1) {
+      Tile[] letterTiles = m.getLetterTiles();
+      boolean containsBlank = false;
+      for (int i = 0; i < letterTiles.length; i++) {
+        Tile letterTile = letterTiles[i];
+        if (letterTile.getLetter() == Character.MIN_VALUE) {
+          containsBlank = true;
+          for (int j = 0; j < 26; j++) {
+            Tile[] newLetterTiles = letterTiles.clone();
+            newLetterTiles[i] = new Tile((char) (j + ((int) 'a')), true);
+            allMoves.add(new Move(newLetterTiles, m.getRow(), m.getColumn(), m.getOrientation()));
+          }
+          break;
+        }
+      }
+      if (!containsBlank) {
+        allMoves.add(m);
+      }
+    }
 
     int bestScore = -1;
     Move bestMove = null;
-    for (Move m : moves) {
+    for (Move m : allMoves) {
       int score = m.getScore(board);
       if (score >= bestScore) {
         bestScore = score;
