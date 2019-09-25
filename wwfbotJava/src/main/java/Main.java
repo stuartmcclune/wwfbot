@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Stream;
+
+import javafx.util.Pair;
 import org.paukov.combinatorics3.Generator;
 
 public class Main {
@@ -49,6 +52,7 @@ public class Main {
     System.out.println("Type letters in rack (if blank, type \'?\'):");
     String rackString = sc.nextLine();
     // Convert String to array of Tiles, setting letter to Character.MIN_VALUE if blank.
+    long millis = System.currentTimeMillis();
     int rackSize = rackString.length();
     Tile[] rackTiles = new Tile[rackSize];
     for (int i = 0; i < rackSize; i++) {
@@ -59,17 +63,22 @@ public class Main {
       }
     }
 
-    List<Move> moves = new ArrayList<>();
+    Pair<Move, Integer> bestMoveAndScore = new Pair<>(null, -1);
 
     if (board.isStart()) {
       //First move.
-      for (int i = 1; i < rackSize + 1; i++) {
-        Generator.combination(rackTiles)
-            .simple(i)
+      for (int k = 1; k < rackSize + 1; k++) {
+        Pair<Move, Integer> thisBestMoveAndScore = Generator.combination(rackTiles)
+            .simple(k)
             .stream()
-            .forEach(combination -> Generator.permutation(combination)
-            .simple()
-            .forEach(p -> moves.add(new Move(p, 5, p.size() == 7 ? 4 : 5, Orientation.HORIZONTAL))));
+            .flatMap(combination -> Generator.permutation(combination)
+                .simple()
+                .stream())
+            .flatMap(p -> substituteBlanks(p))
+            .map(p -> new Move(p, 5, p.size() == 7 ? 4 : 5, Orientation.HORIZONTAL))
+            .map(m -> new Pair<Move, Integer>(m, m.getScore(board)))
+            .reduce(new Pair<Move, Integer>(null, -1), (currentBest, elem) -> elem.getValue() >= currentBest.getValue() ? elem : currentBest);
+        bestMoveAndScore = thisBestMoveAndScore.getValue() >= bestMoveAndScore.getValue() ? thisBestMoveAndScore : bestMoveAndScore;
       }
     } else {
       //Not first move.
@@ -81,104 +90,94 @@ public class Main {
             for (int k = hDist; k < rackSize + 1; k++) {
               int finalI = i;
               int finalJ = j;
-              Generator.combination(rackTiles)
+              Pair<Move, Integer> thisBestMoveAndScore = Generator.combination(rackTiles)
                   .simple(k)
                   .stream()
-                  .forEach(combination -> Generator.permutation(combination)
+                  .flatMap(combination -> Generator.permutation(combination)
                       .simple()
-                      .forEach(p -> moves.add(new Move(p, finalI, finalJ, Orientation.HORIZONTAL))));
+                      .stream())
+                  .flatMap(p -> substituteBlanks(p))
+                  .map(p -> new Move(p, finalI, finalJ, Orientation.HORIZONTAL))
+                  .map(m -> new Pair<Move, Integer>(m, m.getScore(board)))
+                  .reduce(new Pair<Move, Integer>(null, -1), (currentBest, elem) -> elem.getValue() >= currentBest.getValue() ? elem : currentBest);
+              bestMoveAndScore = thisBestMoveAndScore.getValue() >= bestMoveAndScore.getValue() ? thisBestMoveAndScore : bestMoveAndScore;
             }
+
           }
           if (vDist > 0) {
             for (int k = vDist; k < rackSize + 1; k++) {
-              //TODO: avoid repeat computation.
+              //TODO: Avoid repeat computation of permutations.
               int finalI = i;
               int finalJ = j;
-              Generator.combination(rackTiles)
+              Pair<Move, Integer> thisBestMoveAndScore = Generator.combination(rackTiles)
                   .simple(k)
                   .stream()
-                  .forEach(combination -> Generator.permutation(combination)
+                  .flatMap(combination -> Generator.permutation(combination)
                       .simple()
-                      .forEach(p -> moves.add(new Move(p, finalI, finalJ, Orientation.VERTICAL))));
+                      .stream())
+                  .flatMap(p -> substituteBlanks(p))
+                  .map(p -> new Move(p, finalI, finalJ, Orientation.VERTICAL))
+                  .map(m -> new Pair<Move, Integer>(m, m.getScore(board)))
+                  .reduce(new Pair<Move, Integer>(null, -1), (currentBest, elem) -> elem.getValue() >= currentBest.getValue() ? elem : currentBest);
+              bestMoveAndScore = thisBestMoveAndScore.getValue() >= bestMoveAndScore.getValue() ? thisBestMoveAndScore : bestMoveAndScore;
             }
           }
         }
       }
     }
 
-    //If a move contains a blank, substitute with 26 possible moves.
-    List<Move> allMoves1 = new ArrayList<>();
-    for (Move m : moves) {
-      Tile[] letterTiles = m.getLetterTiles();
-      boolean containsBlank = false;
-      for (int i = 0; i < letterTiles.length; i++) {
-        Tile letterTile = letterTiles[i];
-        if (letterTile.getLetter() == Character.MIN_VALUE) {
-          containsBlank = true;
-          for (int j = 0; j < 26; j++) {
-            Tile[] newLetterTiles = letterTiles.clone();
-            newLetterTiles[i] = new Tile((char) (j + ((int) 'a')), true);
-            allMoves1.add(new Move(newLetterTiles, m.getRow(), m.getColumn(), m.getOrientation()));
-          }
-          break;
-        }
-      }
-      if (!containsBlank) {
-        allMoves1.add(m);
-      }
-    }
+    Move bestMove = bestMoveAndScore.getKey();
+    int bestScore = bestMoveAndScore.getValue();
 
-    //Repeat for second blank.
-    //TODO: Change to function.
-    List<Move> allMoves = new ArrayList<>();
-    for (Move m : allMoves1) {
-      Tile[] letterTiles = m.getLetterTiles();
-      boolean containsBlank = false;
-      for (int i = 0; i < letterTiles.length; i++) {
-        Tile letterTile = letterTiles[i];
-        if (letterTile.getLetter() == Character.MIN_VALUE) {
-          containsBlank = true;
-          for (int j = 0; j < 26; j++) {
-            Tile[] newLetterTiles = letterTiles.clone();
-            newLetterTiles[i] = new Tile((char) (j + ((int) 'a')), true);
-            allMoves.add(new Move(newLetterTiles, m.getRow(), m.getColumn(), m.getOrientation()));
-          }
-          break;
-        }
-      }
-      if (!containsBlank) {
-        allMoves.add(m);
-      }
-    }
-
-    int bestScore = -1;
-    Move bestMove = null;
-    for (Move m : allMoves) {
-      int score = m.getScore(board);
-      if (score >= bestScore) {
-        bestScore = score;
-        bestMove = m;
-      }
-    }
     if (bestScore == -1) {
       System.out.println("No possible move.");
       return;
     }
 
-    StringBuilder sb = new StringBuilder();
+    StringBuilder wordSB = new StringBuilder();
     for (Tile t : bestMove.getLetterTiles()) {
       if (t.isBlank()) {
-        sb.append('?');
+        wordSB.append('?');
       }
-      sb.append(t.getLetter());
+      wordSB.append(t.getLetter());
     }
     System.out.println("BEST MOVE");
-    System.out.println("Letters: " + sb);
+    System.out.println("Letters: " + wordSB);
     System.out.println("Row: " + bestMove.getRow());
     System.out.println("Column: " + bestMove.getColumn());
     System.out.println("Orientation: " + bestMove.getOrientation());
     System.out.println("Score: " + bestScore);
+    System.out.println("------------------------------");
+    System.out.println("Time taken to compute: " + ((System.currentTimeMillis() - millis)/1000) + "s");
 
+  }
+
+  private static Stream<List<Tile>> substituteBlanks(List<Tile> p) {
+    //Assume no blanks. Will be overwritten if blanks found.
+    Stream<List<Tile>> res = Stream.of(p);
+    //Iterate through all letters.
+    for (int i = 0; i < p.size(); i++) {
+      //Check for blanks.
+      if (p.get(i).getLetter() == Character.MIN_VALUE) {
+        //If blank found, substitute it for all a-z, and look again for next blank.
+        res = substituteBlankAtIndex(p, i)
+            .flatMap(s -> substituteBlanks(s));
+      }
+    }
+
+    return res;
+  }
+
+  private static Stream<List<Tile>> substituteBlankAtIndex(List<Tile> p, int i) {
+    List<List<Tile>> subs = new ArrayList<>();
+    for (int j = 0; j < 26; j++) {
+      //Shallow copy.
+      List<Tile> newP = new ArrayList<>(p);
+      newP.set(i, new Tile((char) (j + ((int) 'a')), true));
+      subs.add(newP);
+    }
+
+    return subs.stream();
   }
 
   private static void play() {
