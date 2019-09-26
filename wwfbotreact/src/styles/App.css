@@ -105,6 +105,11 @@
   color: black;
   font-size: 24px;
   font-weight: bold;
+  cursor: pointer;
+}
+
+.cheatBtn:active {
+  background-color: rgb(255, 136, 0);
 }
 
 .green{

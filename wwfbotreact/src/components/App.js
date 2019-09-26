@@ -1,7 +1,8 @@
 import React from 'react';
-import Board from './board';
-import Pool from './pool';
-import Rack from './rack';
+import '../styles/App.css';
+import CurrentBoard from '../containers/currentBoard';
+import CurrentRack from '../containers/currentRack';
+import CurrentPool from '../containers/currentPool';
 
 function App() {
 
@@ -11,17 +12,19 @@ function App() {
         <h1>wwfBot</h1>
       </div>
       <div className="content">
-        <Rack />
+        <CurrentRack />
         <div className="contentMiddle">
-          <Board />
+          <CurrentBoard />
           <button className="cheatBtn">Cheat</button>
         </div>
-        <Pool />
+        <CurrentPool />
         
       </div>
       
     </div>
   )
+
+ 
 }
 
 export default App;
