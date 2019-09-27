@@ -11,7 +11,7 @@ function Pool({tiles, selected, onTileClick}) {
             
             <div className="poolTiles">
                 {tiles.map((tile, index) => (
-                    <Tile {...tile} isSelected={selected === index} onClick={() => onTileClick(index)} />
+                    <Tile {...tile} key={index} isSelected={selected === index} onClick={() => onTileClick(index)} />
                 ))}     
             </div>
         </div>

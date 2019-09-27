@@ -1,11 +1,11 @@
 import {connect} from 'react-redux';
-import {setBoard, selectBoardTile} from '../actions';
+import {selectBoardTile} from '../actions';
 import Board from '../components/board';
 
 const mapStateToProps = state => {
     return {
         tiles: state.board,
-        selected: state.selectedBoardTile
+        selected: state.selectedTile.type === "BOARD" ? state.selectedTile.id : null,
     }
 };
 

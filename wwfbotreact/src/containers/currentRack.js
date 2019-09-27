@@ -5,7 +5,7 @@ import Rack from '../components/rack';
 const mapStateToProps = state => {
     return {
         tiles: state.rack,
-        selected: state.selectedRackTile
+        selected: state.selectedTile.type === "RACK" ? state.selectedTile.id : null,
     };
 }
 

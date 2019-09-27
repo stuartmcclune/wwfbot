@@ -5,7 +5,7 @@ import Pool from '../components/pool';
 const mapStateToProps = state => {
     return {
         tiles: state.pool,
-        selected: state.selectedPoolTile
+        selected: state.selectedTile.type === "POOL" ? state.selectedTile.id : null,
     }
 };
 

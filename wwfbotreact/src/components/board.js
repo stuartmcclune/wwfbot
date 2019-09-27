@@ -6,7 +6,7 @@ function Board({tiles, selected, onTileClick}) {
     return(
         <div className = "board">
             {tiles.map((tile, index) => (
-                <Tile {...tile} isSelected={index === selected} onClick={() => onTileClick(index)}/>
+                <Tile {...tile} key={index} isSelected={index === selected} onClick={() => onTileClick(index)}/>
             ))}
         </div>
     )
