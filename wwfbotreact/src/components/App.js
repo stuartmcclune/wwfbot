@@ -3,6 +3,7 @@ import '../styles/App.css';
 import CurrentBoard from '../containers/currentBoard';
 import CurrentRack from '../containers/currentRack';
 import CurrentPool from '../containers/currentPool';
+import CheatButton from '../containers/cheatButton';
 
 function App() {
 
@@ -15,7 +16,7 @@ function App() {
         <CurrentRack />
         <div className="contentMiddle">
           <CurrentBoard />
-          <button className="cheatBtn">Cheat</button>
+          <CheatButton />
         </div>
         <CurrentPool />
         

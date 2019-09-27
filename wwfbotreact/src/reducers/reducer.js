@@ -181,6 +181,16 @@ const reducer = (state = initialState, action) => {
             }
 
             return Object.assign({}, state, {selectedTile: state.selectedTile.type === "BOARD" && state.selectedTile.id === action.id ? {} : {id: action.id, type: "BOARD"}});
+        case 'REQUEST_BEST_MOVE':
+            return Object.assign({}, state, {
+                isFetching: true,
+            })
+        case 'RECEIVE_BEST_MOVE':
+            console.log(action.bestMove)
+            return Object.assign({}, state, {
+                isFetching: false,
+                bestMove: action.bestMove
+            })
         default:
             return state;
     }

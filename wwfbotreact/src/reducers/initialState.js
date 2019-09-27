@@ -162,6 +162,8 @@ export const initialState = {
         {letter: "Z", score: 10, count: 1},
         {letter: "", score: 0, count: 2}
     ],
-    selectedTile: {type: null, id: null}
+    selectedTile: {type: null, id: null},
+    isFetching: false,
+    bestMove: {}
     
 }
