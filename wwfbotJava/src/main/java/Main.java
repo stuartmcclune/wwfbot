@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Stream;
 
 import utils.Pair;
@@ -67,7 +65,7 @@ public class Main {
 
     if (board.isStart()) {
       //First move.
-      for (int k = 1; k < rackSize + 1; k++) {
+      for (int k = 2; k < rackSize + 1; k++) {
         Pair<Move, Integer> thisBestMoveAndScore = Generator.combination(rackTiles)
             .simple(k)
             .stream()
@@ -83,6 +81,23 @@ public class Main {
       }
     } else {
       //Not first move.
+      //Get all permutations to avoid recomputation.
+      Map<Integer,List<List<Tile>>> perms = new HashMap<>();
+      for (int k = 1; k < rackSize + 1; k++) {
+        List<List<Tile>> kPerms = new ArrayList<>();
+
+        Generator.combination(rackTiles)
+            .simple(k)
+            .stream()
+            .flatMap(combination -> Generator.permutation(combination)
+              .simple()
+              .stream())
+            .flatMap(Main::substituteBlanks)
+            .forEach(kPerms::add);
+        perms.put(k, kPerms);
+      }
+
+      //Iterate over every possible move.
       for (int i = 0; i < 11; i++) {
         for (int j = 0; j < 11; j++) {
           int hDist = board.dist(i, j, Orientation.HORIZONTAL);
@@ -91,36 +106,23 @@ public class Main {
             for (int k = hDist; k < rackSize + 1; k++) {
               int finalI = i;
               int finalJ = j;
-              Pair<Move, Integer> thisBestMoveAndScore = Generator.combination(rackTiles)
-                  .simple(k)
+              Pair<Move, Integer> thisBestMoveAndScore = perms.get(k)
                   .stream()
                   .parallel()
-                  .flatMap(combination -> Generator.permutation(combination)
-                      .simple()
-                      .stream()
-                      .parallel())
-                  .flatMap(p -> substituteBlanks(p))
                   .map(p -> new Move(p, finalI, finalJ, Orientation.HORIZONTAL))
                   .map(m -> new Pair<Move, Integer>(m, m.getScore(board)))
                   .reduce(new Pair<Move, Integer>(null, -1), (currentBest, elem) -> elem.getValue() >= currentBest.getValue() ? elem : currentBest);
               bestMoveAndScore = thisBestMoveAndScore.getValue() >= bestMoveAndScore.getValue() ? thisBestMoveAndScore : bestMoveAndScore;
             }
-
           }
+
           if (vDist > 0) {
             for (int k = vDist; k < rackSize + 1; k++) {
-              //TODO: Avoid repeat computation of permutations.
               int finalI = i;
               int finalJ = j;
-              Pair<Move, Integer> thisBestMoveAndScore = Generator.combination(rackTiles)
-                  .simple(k)
+              Pair<Move, Integer> thisBestMoveAndScore = perms.get(k)
                   .stream()
                   .parallel()
-                  .flatMap(combination -> Generator.permutation(combination)
-                      .simple()
-                      .stream()
-                      .parallel())
-                  .flatMap(p -> substituteBlanks(p))
                   .map(p -> new Move(p, finalI, finalJ, Orientation.VERTICAL))
                   .map(m -> new Pair<Move, Integer>(m, m.getScore(board)))
                   .reduce(new Pair<Move, Integer>(null, -1), (currentBest, elem) -> elem.getValue() >= currentBest.getValue() ? elem : currentBest);
