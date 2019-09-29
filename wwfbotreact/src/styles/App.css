@@ -69,7 +69,7 @@
 }
 
 .selected {
-  border-color: orange;
+  border-color: red;
 }
 
 .score{
@@ -114,4 +114,8 @@
 
 .green{
   background-color: green;
+}
+
+.isLetter{
+  background-color: orange;
 }
