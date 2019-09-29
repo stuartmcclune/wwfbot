@@ -7,7 +7,7 @@ public class Tile {
     private boolean isEmpty;
 
     public Tile(char letter, int score, boolean isEmpty) {
-        this.letter = letter;
+        this.letter = Character.toUpperCase(letter);
         this.score = score;
         this.isEmpty = isEmpty;
     }
