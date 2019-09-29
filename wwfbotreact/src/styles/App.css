@@ -140,3 +140,7 @@
 .hide{
   display:none;
 }
+
+.runOut {
+  background-color: rgb(136, 136, 136);
+}

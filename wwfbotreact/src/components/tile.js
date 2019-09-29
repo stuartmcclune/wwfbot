@@ -3,7 +3,7 @@ import React from 'react';
 function Tile({letter, score, count, isSelected, onClick}) {
 
     const isLetter = score != null;
-    const className = "tile" + (isSelected ? " selected" : "") + (isLetter ? " isLetter" : "");
+    const className = "tile" + (isSelected ? " selected" : "") + (isLetter ? " isLetter" : "") + (count === 0 ? " runOut" : "");
 
     return(
         <div className={className} onClick={onClick}>
