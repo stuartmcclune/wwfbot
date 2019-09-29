@@ -119,3 +119,24 @@
 .isLetter{
   background-color: orange;
 }
+
+.loading{
+  position:fixed;
+  display:flex;
+  width: 100%;
+  min-height: 100vh;
+  text-align: center;
+  bottom: 0;
+  right: 0;
+  opacity: 50%;
+  color: white;
+  background-color: rgba(0,0,0,0.8);
+}
+
+.loading h1 {
+  margin:auto;
+}
+
+.hide{
+  display:none;
+}
