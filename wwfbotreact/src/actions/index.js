@@ -1,5 +1,4 @@
 import fetch from 'cross-fetch';
-import { get } from 'https';
 
 export const selectBoardTile = id => {
     return {
@@ -41,15 +40,39 @@ export function fetchBestMove() {
         // Update state to inform API call starting.
         dispatch(requestBestMove());
         // Make API call.
-        return fetch('http://www.stuartmcclune.co.uk/bestmove', {
+        return fetch('http://localhost:8080/bestmove', {
             method: 'post',
             headers: {
-                "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+                "Content-type": "application/json; charset=UTF-8"
               },
-              body: {
-                  board: getState().board,
-                  rack: getState.rack
-              }
+              body: JSON.stringify({
+                  rack: getState().rack.map(t => {
+                      const isBlank = t.score === 0;
+                      const isEmpty = t.score == null;
+                      let letter;
+                      if (isBlank) {
+                          letter = "?";
+                      } else if (isEmpty) {
+                          letter = " ";
+                      } else {
+                          letter = t.letter;
+                      }
+                      return {letter: letter, score: t.score == null ? 0 : t.score }
+                  }),
+                    board: getState().board.map(t => {
+                      const isBlank = t.score === 0;
+                      const isEmpty = t.score == null;
+                      let letter;
+                      if (isBlank) {
+                          letter = "?";
+                      } else if (isEmpty) {
+                          letter = " ";
+                      } else {
+                          letter = t.letter;
+                      }
+                      return {letter: letter, score: t.score == null ? 0 : t.score }
+                  })    
+              })
         })
         .then(
             response => response.json(),
