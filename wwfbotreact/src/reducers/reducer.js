@@ -187,7 +187,6 @@ const reducer = (state = initialState, action) => {
                 isFetching: true,
             })
         case 'RECEIVE_BEST_MOVE':
-            console.log(action.bestMove)
             return Object.assign({}, state, {
                 isFetching: false,
                 bestMove: action.bestMove
