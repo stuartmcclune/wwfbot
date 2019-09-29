@@ -3,7 +3,7 @@ import {initialState} from './initialState';
 const reducer = (state = initialState, action) => {
     switch(action.type) {
         case 'SELECT_RACK_TILE':
-            if (state.selectedTile.id != null && state.rack[action.id].score == null) {
+            if (state.selectedTile.id != null && state.rack[action.id].isEmpty) {
                 //A tile is selected and this rack space is playable.
                 let selectedTile;
                 const newState = Object.assign({}, state);
@@ -14,7 +14,7 @@ const reducer = (state = initialState, action) => {
                         }
                         selectedTile = Object.assign({}, state.rack[state.selectedTile.id]);
                         newState.rack = state.rack.map((tile, index) => {
-                            return index === state.selectedTile.id ? {} : tile;
+                            return index === state.selectedTile.id ? {isEmpty: true} : tile;
                         })
     
                         break;
@@ -78,7 +78,7 @@ const reducer = (state = initialState, action) => {
                             return newState;
                         }
                         newState.rack = state.rack.map((tile, index) => {
-                            return index === state.selectedTile.id ? {} : tile;
+                            return index === state.selectedTile.id ? {isEmpty: true} : tile;
                         })
         
                         break;
@@ -121,7 +121,7 @@ const reducer = (state = initialState, action) => {
 
             return Object.assign({}, state, {selectedTile: state.selectedTile.type === "POOL" && state.selectedTile.id === action.id ? {} : {id: action.id, type: "POOL"}});
         case 'SELECT_BOARD_TILE':
-            if (state.selectedTile.id != null && state.board[action.id].score == null) {
+            if (state.selectedTile.id != null && state.board[action.id].isEmpty) {
                 //A tile is selected and this board space is playable.
                 let selectedTile;
                 const newState = Object.assign({}, state);
@@ -129,7 +129,7 @@ const reducer = (state = initialState, action) => {
                     case "RACK":
                         selectedTile = Object.assign({}, state.rack[state.selectedTile.id]);
                         newState.rack = state.rack.map((tile, index) => {
-                            return index === state.selectedTile.id ? {} : tile;
+                            return index === state.selectedTile.id ? {isEmpty: true} : tile;
                         })
 
                         break;
@@ -175,6 +175,7 @@ const reducer = (state = initialState, action) => {
                 newState.board = newState.board.map((tile, index) => {
                     return index === action.id ? selectedTile : tile;
                 })
+                newState.bestMove = initialState.bestMove;
 
                 return newState;
 

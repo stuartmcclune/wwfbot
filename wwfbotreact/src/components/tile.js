@@ -1,9 +1,10 @@
 import React from 'react';
 
-function Tile({letter, score, count, isSelected, onClick}) {
+function Tile({letter, score, count, isEmpty, isSelected, onClick}) {
 
     const isLetter = score != null;
-    const className = "tile" + (isSelected ? " selected" : "") + (isLetter ? " isLetter" : "") + (count === 0 ? " runOut" : "");
+    const isFake = isEmpty && isLetter;
+    const className = "tile" + (isSelected ? " selected" : "") + (isLetter ? " isLetter" : "") + (count === 0 ? " runOut" : "") + (isFake ? " fake" : "");
 
     return(
         <div className={className} onClick={onClick}>

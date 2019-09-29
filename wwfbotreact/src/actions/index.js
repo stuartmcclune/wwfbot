@@ -48,7 +48,7 @@ export function fetchBestMove() {
               body: JSON.stringify({
                   rack: getState().rack.map(t => {
                       const isBlank = t.score === 0;
-                      const isEmpty = t.score == null;
+                      const isEmpty = t.isEmpty;
                       let letter;
                       if (isBlank) {
                           letter = "?";
@@ -57,11 +57,11 @@ export function fetchBestMove() {
                       } else {
                           letter = t.letter;
                       }
-                      return {letter: letter, score: t.score == null ? 0 : t.score }
+                      return {letter: letter, score: t.score == null ? 0 : t.score, isEmpty: isEmpty}
                   }),
                     board: getState().board.map(t => {
                       const isBlank = t.score === 0;
-                      const isEmpty = t.score == null;
+                      const isEmpty = t.isEmpty;
                       let letter;
                       if (isBlank) {
                           letter = "?";
@@ -70,7 +70,7 @@ export function fetchBestMove() {
                       } else {
                           letter = t.letter;
                       }
-                      return {letter: letter, score: t.score == null ? 0 : t.score }
+                      return {letter: letter, score: t.score == null ? 0 : t.score, isEmpty: isEmpty }
                   })    
               })
         })

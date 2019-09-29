@@ -6,6 +6,7 @@ const mapStateToProps = state => {
     return {
         tiles: state.board,
         selected: state.selectedTile.type === "BOARD" ? state.selectedTile.id : null,
+        bestMove: state.bestMove,
     }
 };
 
