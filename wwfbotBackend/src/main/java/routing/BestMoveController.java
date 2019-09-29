@@ -12,7 +12,7 @@ public class BestMoveController {
 
     @CrossOrigin
     @PostMapping("/bestmove")
-    public BestMove greeting(@RequestBody BestMoveRequestBody body) {
+    public BestMove bestMove(@RequestBody BestMoveRequestBody body) {
         BestMove bestMove = new MoveCalculator(body).getBestMove();
 
         return bestMove;

@@ -4,10 +4,12 @@ public class Tile {
 
     private char letter;
     private int score;
+    private boolean isEmpty;
 
-    public Tile(char letter, int score) {
+    public Tile(char letter, int score, boolean isEmpty) {
         this.letter = letter;
         this.score = score;
+        this.isEmpty = isEmpty;
     }
 
     public char getLetter() {
@@ -16,6 +18,10 @@ public class Tile {
 
     public int getScore() {
         return score;
+    }
+
+    public boolean getIsEmpty() {
+        return isEmpty;
     }
 
     @Override

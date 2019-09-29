@@ -137,10 +137,8 @@ public class MoveCalculator {
 
     List<routing.Tile> responseTiles = new ArrayList<>();
     for (Tile t : bestMove.getLetterTiles()) {
-      responseTiles.add(new routing.Tile(t.getLetter(), t.getScore()));
+      responseTiles.add(new routing.Tile(t.getLetter(), t.getScore(), true));
     }
-
-
 
     return new BestMove(responseTiles, bestMove.getRow(), bestMove.getColumn(), bestMove.getOrientation() == Orientation.HORIZONTAL ? "h" : "v", bestScore);
 
