@@ -148,3 +148,15 @@
 .fake {
   background-color: green;
 }
+
+.letterBtn {
+  border: 2px solid black;
+  height: 64px;
+  width: 64px;
+  background: orange;
+  border-radius: 8px;
+  text-align: center;
+  color: white;
+  cursor: pointer;
+  font-size: 24px;
+}

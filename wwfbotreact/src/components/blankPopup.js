@@ -5,7 +5,11 @@ function BlankPopup({isOpen, onClick}) {
     return (
         <Popup open={isOpen} closeOnDocumentClick={false}>
             <div>
-                <button onClick={() => onClick('A')}>A</button>
+                <h1>Pick a Letter</h1>
+                {['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'].map(c => (
+                    <button className="letterBtn" onClick={() => onClick(c)}>{c}</button>
+                ))}
+                {/* <button onClick={() => onClick('A')}>A</button>
                 <button onClick={() => onClick('B')}>B</button>
                 <button onClick={() => onClick('C')}>C</button>
                 <button onClick={() => onClick('D')}>D</button>
@@ -30,7 +34,7 @@ function BlankPopup({isOpen, onClick}) {
                 <button onClick={() => onClick('W')}>W</button>
                 <button onClick={() => onClick('X')}>X</button>
                 <button onClick={() => onClick('Y')}>Y</button>
-                <button onClick={() => onClick('Z')}>Z</button>
+                <button onClick={() => onClick('Z')}>Z</button> */}
             </div>
         </Popup>    
     )
