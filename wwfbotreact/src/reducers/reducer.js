@@ -53,6 +53,10 @@ const reducer = (state = initialState, action) => {
                 }
     
                 //This space is playable, and the selectedTile is playable.
+                //Check if blank. If so, set letter to "".
+                if (selectedTile.score === 0) {
+                    selectedTile.letter = "";
+                }
                 newState.selectedTile = {};
                 newState.rack = newState.rack.map((tile, index) => {
                     return index === action.id ? selectedTile : tile;
@@ -85,6 +89,9 @@ const reducer = (state = initialState, action) => {
                     
                     case "BOARD":
                         selectedTile = Object.assign({}, state.board[state.selectedTile.id]);
+                        if (selectedTile.score === 0) {
+                            selectedTile.letter = "";
+                        }
                         if (selectedTile.letter !== state.pool[action.id].letter) {
                             //Letters don't match.
                             newState.selectedTile = {type: "POOL", id: action.id};
@@ -172,6 +179,12 @@ const reducer = (state = initialState, action) => {
 
                 //This space is playable, and the selectedTile is playable.
                 newState.selectedTile = {};
+                //Check if selectedTile is blank. If so, change its letter.
+                if (selectedTile.score === 0) {
+                    selectedTile.letter = state.blankLetter;
+                }
+
+
                 newState.board = newState.board.map((tile, index) => {
                     return index === action.id ? selectedTile : tile;
                 })
@@ -191,6 +204,17 @@ const reducer = (state = initialState, action) => {
                 isFetching: false,
                 bestMove: action.bestMove
             })
+        case 'CLOSE_POPUP':
+            return Object.assign({}, state, {
+                popupOpen: false,
+                blankLetter: action.letter
+            })
+        case 'OPEN_POPUP':
+                return Object.assign({}, state, {
+                    popupOpen: true,
+                    awaitingSelection: action.id,
+                    blankLetter: null
+                })
         default:
             return state;
     }

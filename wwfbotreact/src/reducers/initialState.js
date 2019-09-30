@@ -164,6 +164,8 @@ export const initialState = {
     ],
     selectedTile: {type: null, id: null},
     isFetching: false,
-    bestMove: {letters: null, row: -1, column: -1, orientation: null, score: -1}
+    bestMove: {letters: null, row: -1, column: -1, orientation: null, score: -1},
+    popupOpen: false,
+    blankLetter: null,
     
 }
