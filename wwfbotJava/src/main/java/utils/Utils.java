@@ -15,28 +15,8 @@ public class Utils {
       Collections::<Character, Integer> unmodifiableMap
   ));
 
-  private static final int[] primes = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73,
-      79, 83, 89, 97, 101};
-
   public static int getScore(char letter) {
     return letterScores.get(Character.toLowerCase(letter));
-  }
-
-  public static int getPrime(int index) {
-    return primes[index];
-  }
-
-  public static int getPrime(char letter) {
-    int index = (int) Character.toLowerCase(letter) - (int)'a';
-    return primes[index];
-  }
-
-  public static int getAnagramKey(String word) {
-    int key = 1;
-    for (char c : word.toCharArray()) {
-      key *= getPrime(c);
-    }
-    return key;
   }
 
 }

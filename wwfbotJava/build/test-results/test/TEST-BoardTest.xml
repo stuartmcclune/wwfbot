@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="BoardTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2019-09-25T18:55:01" hostname="Stuart-PC" time="0.012">
+<testsuite name="BoardTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2019-10-08T20:02:26" hostname="Stuart-PC" time="0.019">
   <properties/>
-  <testcase name="moveCannotStartOutOfBounds" classname="BoardTest" time="0.01"/>
+  <testcase name="moveCannotStartOutOfBounds" classname="BoardTest" time="0.017"/>
   <testcase name="canPlayBlanks" classname="BoardTest" time="0.001"/>
   <testcase name="canPlayCrossingMoves" classname="BoardTest" time="0.0"/>
   <testcase name="boardCorrectOnInit" classname="BoardTest" time="0.0"/>
