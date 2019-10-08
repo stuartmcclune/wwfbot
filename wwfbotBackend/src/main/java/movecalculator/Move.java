@@ -117,7 +117,7 @@ public class Move {
       return 0;
     }
     //Check if word is valid.
-    if (WordList.getInstance().containsMap(word.toString())) {
+    if (WordList.getInstance().contains(word.toString())) {
       //Calculate score.
       return wordScore * wordMultiplier;
     } else {
