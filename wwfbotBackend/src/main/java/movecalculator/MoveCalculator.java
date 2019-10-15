@@ -76,55 +76,20 @@ public class MoveCalculator {
       }
     } else {
       //Not first move.
-      //Get all permutations to avoid recomputation.
-      Map<Integer,List<List<Tile>>> perms = new HashMap<>();
+      //We run out of memory if we store permutations.
       for (int k = 1; k < rackSize + 1; k++) {
-        List<List<Tile>> kPerms = new ArrayList<>();
-
+        Pair<Move, Integer> bestMoveAndScoreK = 
         Generator.combination(rack)
-            .simple(k)
-            .stream()
-            .flatMap(combination -> Generator.permutation(combination)
-              .simple()
-              .stream())
-            .flatMap(MoveCalculator::substituteBlanks)
-            .forEach(kPerms::add);
-        perms.put(k, kPerms);
-      }
-
-      //Iterate over every possible move.
-      for (int i = 0; i < 11; i++) {
-        for (int j = 0; j < 11; j++) {
-          int hDist = board.dist(i, j, Orientation.HORIZONTAL);
-          int vDist = board.dist(i, j, Orientation.VERTICAL);
-          if (hDist > 0) {
-            for (int k = hDist; k < rackSize + 1; k++) {
-              int finalI = i;
-              int finalJ = j;
-              Pair<Move, Integer> thisBestMoveAndScore = perms.get(k)
-                  .stream()
-                  .parallel()
-                  .map(p -> new Move(p, finalI, finalJ, Orientation.HORIZONTAL))
-                  .map(m -> new Pair<Move, Integer>(m, m.getScore(board)))
-                  .reduce(new Pair<Move, Integer>(null, -1), (currentBest, elem) -> elem.getValue() >= currentBest.getValue() ? elem : currentBest);
-              bestMoveAndScore = thisBestMoveAndScore.getValue() >= bestMoveAndScore.getValue() ? thisBestMoveAndScore : bestMoveAndScore;
-            }
-          }
-
-          if (vDist > 0) {
-            for (int k = vDist; k < rackSize + 1; k++) {
-              int finalI = i;
-              int finalJ = j;
-              Pair<Move, Integer> thisBestMoveAndScore = perms.get(k)
-                  .stream()
-                  .parallel()
-                  .map(p -> new Move(p, finalI, finalJ, Orientation.VERTICAL))
-                  .map(m -> new Pair<Move, Integer>(m, m.getScore(board)))
-                  .reduce(new Pair<Move, Integer>(null, -1), (currentBest, elem) -> elem.getValue() >= currentBest.getValue() ? elem : currentBest);
-              bestMoveAndScore = thisBestMoveAndScore.getValue() >= bestMoveAndScore.getValue() ? thisBestMoveAndScore : bestMoveAndScore;
-            }
-          }
-        }
+          .simple(k)
+          .stream()
+          .parallel()
+          .flatMap(combination -> Generator.permutation(combination)
+            .simple()
+            .stream())
+          .flatMap(MoveCalculator::substituteBlanks)
+          .map(p -> scorePermutation(p))
+          .reduce(new Pair<Move, Integer>(null, -1), (currentBest, elem) -> elem.getValue() >= currentBest.getValue() ? elem : currentBest);
+          bestMoveAndScore = bestMoveAndScoreK.getValue() >= bestMoveAndScore.getValue() ? bestMoveAndScoreK : bestMoveAndScore; 
       }
     }
 
@@ -142,6 +107,32 @@ public class MoveCalculator {
 
     return new BestMove(responseTiles, bestMove.getRow(), bestMove.getColumn(), bestMove.getOrientation() == Orientation.HORIZONTAL ? "h" : "v", bestScore);
 
+  }
+
+  private Pair<Move, Integer> scorePermutation(List<Tile> p, Orientation ori) {
+    int length = p.size();
+    Pair<Move, Integer> bestMoveAndScore = new Pair<>(null, -1);
+    for (int i = 0; i < 11; i++) {
+      for (int j = 0; j < 11; j++) {
+        //Iterate over all board tiles to see if we can play p here.
+        int dist = board.dist(i, j, ori);
+        
+        if (length >= dist) {
+          //Can play here
+          Move m = new Move(p, i, j, ori);
+          int score = m.getScore(board);
+          bestMoveAndScore = score >= bestMoveAndScore.getValue() ? new Pair<Move, Integer>(m, score) : bestMoveAndScore;
+        }
+
+      }
+    }
+    return bestMoveAndScore;
+  }
+
+  private Pair<Move, Integer> scorePermutation(List<Tile> p) {
+    Pair<Move, Integer> hMove = scorePermutation(p, Orientation.HORIZONTAL);
+    Pair<Move, Integer> vMove = scorePermutation(p, Orientation.VERTICAL);
+    return hMove.getValue() >= vMove.getValue() ? hMove : vMove;
   }
 
   private static Stream<List<Tile>> substituteBlanks(List<Tile> p) {
