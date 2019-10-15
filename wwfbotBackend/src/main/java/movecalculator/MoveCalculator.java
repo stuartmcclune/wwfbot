@@ -116,6 +116,9 @@ public class MoveCalculator {
       for (int j = 0; j < 11; j++) {
         //Iterate over all board tiles to see if we can play p here.
         int dist = board.dist(i, j, ori);
+        if (dist < 1) {
+          continue;
+        }
         
         if (length >= dist) {
           //Can play here
